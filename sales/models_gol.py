@@ -151,15 +151,6 @@ for i, params in enumerate(best_params_list):
     print(f'Fold {i + 1}: {params}')
 
 
-
-
-
-
-
-
-
-
-
 # 모델 저장
 if not os.path.exists("models"):
     os.mkdir("models")
