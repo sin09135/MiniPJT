@@ -18,7 +18,7 @@ for font in font_list:
 plt.rc('font', family=font_name)
 
 # 데이터 불러오기 및 전처리
-data = pd.read_csv('data/비골목상권.csv')
+data = pd.read_csv('data/비골목상권(수정).csv')
 
 # 데이터 분할
 X = data.iloc[:, 5:]
