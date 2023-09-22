@@ -3,9 +3,11 @@ numpy
 pandas
 matplotlib
 seaborn
+plotly
 scikit-learn
 plotly
 streamlit
 Lightgbm
 Xgboost
 joblib
+option_menu

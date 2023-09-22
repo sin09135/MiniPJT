@@ -18,16 +18,21 @@ for font in font_list:
 plt.rc('font', family=font_name)
 
 # 데이터 불러오기 및 전처리
-data = pd.read_csv('data/골목상권.csv')
+data = pd.read_csv('data/골목_model용.csv')
 # 데이터 분할
-# 데이터 로드(실제 데이터셋 가져오기)
-features = ['시간대1', '시간대2', '시간대3', '시간대4', '시간대5', '분기_1', '분기_2', '분기_3',
-       '총 가구 수', '총_직장인구_수', '상권내_총_아파트_세대_수', '배후지_총_아파트_세대_수',
-        '시간대_생활인구_수', '평일_생활인구_평균', '주말_생활인구_평균', '면적당_점포_수',
-       '직장인구/상주인구', '면적당_집객시설_수']
+#k폴드, 라이트gbm 베이스라인 코드
 
-X = data[features]
-y = data['매출']
+# 라이브러리 임포트
+import lightgbm as lgb
+import numpy as np
+import pandas as pd
+from lightgbm import LGBMRegressor
+from sklearn.model_selection import train_test_split, KFold, RandomizedSearchCV
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+
+# 데이터 로드(실제 데이터셋 가져오기)
+X = data.iloc[:, 5:]
+y = data.iloc[:, 0]
 
 # 데이터를 훈련세트와 테스트 세트로 나눔(test_size 설정 필요, 임의로 0.2)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -149,6 +154,7 @@ plt.show()
 print("K-fold 교차 검증을 위한 최적 하이퍼파라미터:")
 for i, params in enumerate(best_params_list):
     print(f'Fold {i + 1}: {params}')
+#k폴드, 라이트gbm 베이스라인 코드
 
 
 # 모델 저장

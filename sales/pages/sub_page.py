@@ -3,23 +3,15 @@ import joblib
 import numpy as np
 import pandas as pd
 
+
 # 모델 불러오기
 model1 = joblib.load("models/gm_model.pkl")
 model2 = joblib.load("models/ngm_model.pkl")
 
 # 데이터 프레임 불러오기
 df = pd.read_csv('data/전체_수정_streamlit용.csv')
-df1 = pd.read_csv('data/골목상권.csv')
-df2 = pd.read_csv('data/비골목상권(수정).csv')
-
-model_cols = [
-        '매출','기준_년_코드','상권_구분_코드_명','상권_코드','상권_코드_명','시간대1', '시간대2', '시간대3', '시간대4', '시간대5', 
-        '분기_1', '분기_2', '분기_3','총 가구 수', '총_직장인구_수', '상권내_총_아파트_세대_수', '배후지_총_아파트_세대_수',
-        '시간대_생활인구_수', '평일_생활인구_평균', '주말_생활인구_평균', '면적당_점포_수', '직장인구/상주인구', '면적당_집객시설_수'
-    ]
-
-df1 = df1[model_cols]
-gol_col = df1['상권_코드_명'].tolist()
+df1 = pd.read_csv('data/골목_streamlit용.csv')
+df2 = pd.read_csv('data/비골목_streamlit용.csv')
 
 # main text
 st.title('강남구 편의점 매출 예측 서비스')
@@ -44,9 +36,10 @@ with st.sidebar:
 
 
 ## 변수 영역
-feature_names_gol = df1.iloc[:, 13:].columns.tolist() 
-feature_names_ngol = df2.iloc[:, 13:].columns.tolist() 
-
+feature_names_gol = df1.iloc[:, 7:].columns.tolist() 
+feature_names_ngol = df2.iloc[:, 7:].columns.tolist() 
+# st.write(feature_names_gol)
+# st.write(feature_names_ngol)
 # 시간대, 분기 제외한 피쳐 slider로 입력
 user_input = []
 
@@ -57,25 +50,27 @@ if selected_feature1 in df1['상권_코드_명'].tolist():
         min_value_feature = float(df1[feature_name].min())
         
         # 각 피쳐당 22년 평균을 default 값으로 설정
-        condition = (df['상권_코드_명'] == selected_feature1) & (df['기준_년_코드'] == 2022)
-        value = df.loc[condition, feature_name]
+        condition = (df1['상권_코드_명'] == selected_feature1) & (df1['기준_년_코드'] == 2022)
+        value = df1.loc[condition, feature_name]
         default_value = value.mean()
+        #default_value = (max_value_feature + min_value_feature) / 2
 
         user_input.append(st.slider(f"{feature_name}:", min_value=min_value_feature, max_value=max_value_feature, value=default_value))
 
 else:
-     for i, feature_name in enumerate(feature_names_ngol):
+    for i, feature_name in enumerate(feature_names_ngol):
         max_value_feature = float(df2[feature_name].max())
         min_value_feature = float(df2[feature_name].min())
 
         # 각 피쳐당 22년 평균을 default 값으로 설정
-        condition = (df['상권_코드_명'] == selected_feature1) & (df['기준_년_코드'] == 2022) 
-        value = df.loc[condition, feature_name]
+        condition = (df2['상권_코드_명'] == selected_feature1) & (df2['기준_년_코드'] == 2022) 
+        value = df2.loc[condition, feature_name]
         default_value = value.mean()
-
+    
         user_input.append(st.slider(f"{feature_name}:", min_value=min_value_feature, max_value=max_value_feature, value=default_value))
 
 # ----------------------------------------------------- 시간대, 분기 값 리스트의 앞에 넣기------------------------------------------------------
+# 초기식
 time1, time2, time3, time4, time5, quarter1, quarter2, quarter3 = 0, 0, 0, 0, 0, 0, 0, 0
 
 if selected_feature2 == unique_time[0]:
@@ -166,3 +161,5 @@ if st.button("예측하기"):
             if predictions is not None:
                 st.subheader('예측 결과')
                 st.write(f"{selected_feature1}의 {selected_feature3} {selected_feature2} 예상 매출은 {predictions[0]:,.0f}원입니다.")
+
+
