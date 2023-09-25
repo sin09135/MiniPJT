@@ -49,26 +49,30 @@ if selected_feature1 in df1['상권_코드_명'].tolist():
     for i, feature_name in enumerate(feature_names_gol):
         max_value_feature = float(df1[feature_name].max())
         min_value_feature = float(df1[feature_name].min())
-        
+
+
         # 각 피쳐당 22년 평균을 default 값으로 설정
         condition = (df1['상권_코드_명'] == selected_feature1) & (df1['기준_년_코드'] == 2022)
         value = df1.loc[condition, feature_name]
-        default_value = value.mean()
+        default_value = value.mean().item()
+        # default_value = float(default_value)
         #default_value = (max_value_feature + min_value_feature) / 2
 
-        user_input.append(st.slider(f"{feature_name}:", min_value=min_value_feature, max_value=max_value_feature, value=default_value))
+        user_input.append(st.slider(f"{feature_name}:", min_value=float(min_value_feature), max_value=float(max_value_feature), value=float(default_value)))
 
 else:
     for i, feature_name in enumerate(feature_names_ngol):
         max_value_feature = float(df2[feature_name].max())
         min_value_feature = float(df2[feature_name].min())
+    
 
         # 각 피쳐당 22년 평균을 default 값으로 설정
         condition = (df2['상권_코드_명'] == selected_feature1) & (df2['기준_년_코드'] == 2022) 
         value = df2.loc[condition, feature_name]
-        default_value = value.mean()
-    
-        user_input.append(st.slider(f"{feature_name}:", min_value=min_value_feature, max_value=max_value_feature, value=default_value))
+        default_value = value.mean().item()
+        # default_value = float(default_value)
+        
+        user_input.append(st.slider(f"{feature_name}:", min_value=float(min_value_feature), max_value=float(max_value_feature), value=float(default_value)))
 
 # ----------------------------------------------------- 시간대, 분기 값 리스트의 앞에 넣기------------------------------------------------------
 # 초기식
