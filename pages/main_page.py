@@ -118,44 +118,49 @@ for i in range (6) :
     numeric_user_inputs.append(numeric_user_input_i)
 
 
-if selected_feature1 and selected_feature3:
+
+# 배열 생성    
+feature_array = np.array(numeric_user_inputs)
+#st.write(feature_array)
+
     ## 예측
-    feature_array = np.array(numeric_user_inputs)
-    #st.write(feature_array)
+if type_code == 0:
     predictions = model1.predict(feature_array)
+else :
+    predictions = model2.predict(feature_array)
     #st.write(predictions)
 
-    ## 시각화
-    # 데이터 프레임으로 변경
-    df_predictions = pd.DataFrame({'예상 매출': predictions})
-    df_predictions.insert(0, '시간대', ['00 ~ 06', '06 ~ 11', '11 ~ 14', '14 ~ 17', '17 ~ 21', '21 ~ 24'])
+## 시각화
+# 데이터 프레임으로 변경
+df_predictions = pd.DataFrame({'예상 매출': predictions})
+df_predictions.insert(0, '시간대', ['00 ~ 06', '06 ~ 11', '11 ~ 14', '14 ~ 17', '17 ~ 21', '21 ~ 24'])
 
-    # 정수로 변환
-    df_predictions['예상 매출'] = df_predictions['예상 매출'].astype(int)
+# 정수로 변환
+df_predictions['예상 매출'] = df_predictions['예상 매출'].astype(int)
 
-     # plotly 시각화
-    st.markdown(f"### {selected_feature1} {selected_feature3} 편의점 시간대별 예상 매출")
-    st.caption('👉 어느 시간대에 매출이 가장 높은지 확인해보세요!')
-    bar_trace = go.Bar(
-        x=df_predictions['시간대'],
-        y=df_predictions['예상 매출'],
-        text=[f'{val:,}' for val in df_predictions['예상 매출']],
-        textposition='inside',
-        texttemplate='%{text}',
-    )
+    # plotly 시각화
+st.markdown(f"### {selected_feature1} {selected_feature3} 편의점 시간대별 예상 매출")
+st.caption('👉 어느 시간대에 매출이 가장 높은지 확인해보세요!')
+bar_trace = go.Bar(
+    x=df_predictions['시간대'],
+    y=df_predictions['예상 매출'],
+    text=[f'{val:,}' for val in df_predictions['예상 매출']],
+    textposition='inside',
+    texttemplate='%{text}',
+)
 
-    layout = go.Layout(
-        xaxis_title='시간대',
-        yaxis_title='예상 매출'
-    )
+layout = go.Layout(
+    xaxis_title='시간대',
+    yaxis_title='예상 매출'
+)
 
-    bar_fig = go.Figure(data=[bar_trace], layout=layout)
-    st.plotly_chart(bar_fig) 
-    max_type = df_predictions.loc[df_predictions['예상 매출'].idxmax()]['시간대']
-    st.markdown(f'####  👉 시간대 {max_type} 의 매출이 가장 높습니다!')
+bar_fig = go.Figure(data=[bar_trace], layout=layout)
+st.plotly_chart(bar_fig) 
+max_type = df_predictions.loc[df_predictions['예상 매출'].idxmax()]['시간대']
+st.markdown(f'####  👉 시간대 {max_type} 의 매출이 가장 높습니다!')
 
-    st.markdown('---')
-    st.write('')
+st.markdown('---')
+st.write('')
 
 
 # 합치기
