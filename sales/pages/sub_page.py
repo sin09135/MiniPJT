@@ -14,9 +14,10 @@ df1 = pd.read_csv('data/골목_streamlit용.csv')
 df2 = pd.read_csv('data/비골목_streamlit용.csv')
 
 # main text
-st.title('강남구 편의점 매출 예측 서비스')
-st.header('시간대별/ 분기별')
-
+st.subheader('🔎  강남구 편의점 매출 예측 서비스 - 상세')
+st.markdown('☝️ 좌측 side bar에서 상권/시간대/분기를 선택해주세요!')
+st.markdown('✌️ slide를 조정한 후, 예측하기 버튼을 눌러주세요!')
+st.markdown('---')
 
 # side bar 
 with st.sidebar:
@@ -25,7 +26,7 @@ with st.sidebar:
     selected_feature1 = st.selectbox("상권을 선택하세요", unique_market)
 
     # Select time
-    unique_time = ['시간대1', '시간대2', '시간대3', '시간대4', '시간대5', '시간대6']
+    unique_time = ['시간대1(00 ~ 06)', '시간대2(06 ~ 11)', '시간대3(11 ~ 14)', '시간대4(14 ~ 17)', '시간대5(17 ~ 21)', '시간대6(21 ~ 24)']
     selected_feature2 = st.selectbox("시간대를 선택하세요", unique_time)
 
     # Select quarter

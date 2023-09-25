@@ -7,6 +7,12 @@ import plotly.subplots as sp
 import plotly.express as px
 import plotly.graph_objects as go
 import seaborn as sns
+import geopandas as gpd
+from shapely.geometry import Polygon
+import folium
+import base64
+import pyproj
+import time
 
 
 # 한글 폰트 설정
@@ -14,7 +20,6 @@ plt.rcParams['font.family'] = "AppleGothic"
 # Windows, 리눅스 사용자
 # plt.rcParams['font.family'] = "NanumGothic"
 plt.rcParams['axes.unicode_minus'] = False
-
 
 
 # 모델 불러오기
@@ -44,12 +49,23 @@ if type == '골목상권' :
 else:
     type_code = 1 # 비골목상권
 
-
 ## --------------------------------------------- 메인 텍스트 영역 -------------------------------------
-st.header('메인페이지')
+st.subheader('📊  강남구 편의점 매출 예측 서비스')
+st.markdown('###### 좌측 사이드바에서 상권과 분기를 선택하면, 시간대별 예상 매출을 확인하실 수 있습니다')
+st.caption('하단 지도에서 상권의 영역을 확인해보세요!👀')
 ##------------------------------------------------ 지도 영역 -------------------------------------------
+# HTML 파일을 읽어 Base64로 변환
+# with open('map.html', 'r') as f:
+# html = f.read()
+# b64 = base64.b64encode(html.encode()).decode()
+with open('map.html', 'r', encoding='utf-8') as f:
+    html = f.read()
+    b64 = base64.b64encode(html.encode()).decode()
 
-
+# Base64로 인코딩된 HTML을 출력
+st.markdown(f'<iframe src="data:text/html;base64,{b64}" width=750 height=500></iframe>', unsafe_allow_html=True)
+st.markdown('---')
+# ----------------------------------------------------------------------------------------------------------------------------
 ## 변수 영역
 feature_names_gol = df1.iloc[:, 7:].columns.tolist() 
 feature_names_ngol = df2.iloc[:, 7:].columns.tolist() 
@@ -113,14 +129,13 @@ if selected_feature1 and selected_feature3:
     # 데이터 프레임으로 변경
     df_predictions = pd.DataFrame({'예상 매출': predictions})
     df_predictions.insert(0, '시간대', ['00 ~ 06', '06 ~ 11', '11 ~ 14', '14 ~ 17', '17 ~ 21', '21 ~ 24'])
-    st.subheader('시간대별 예상 매출')
-    st.write(df_predictions)
 
     # 정수로 변환
     df_predictions['예상 매출'] = df_predictions['예상 매출'].astype(int)
 
-    # plotly 시각화
-    st.subheader(f"{selected_feature1} 상권 편의점 시간대별 예상 매출 그래프")
+     # plotly 시각화
+    st.markdown(f"### {selected_feature1} {selected_feature3} 편의점 시간대별 예상 매출")
+    st.caption('👉 어느 시간대에 매출이 가장 높은지 확인해보세요!')
     bar_trace = go.Bar(
         x=df_predictions['시간대'],
         y=df_predictions['예상 매출'],
@@ -135,15 +150,20 @@ if selected_feature1 and selected_feature3:
     )
 
     bar_fig = go.Figure(data=[bar_trace], layout=layout)
-    st.plotly_chart(bar_fig)
+    st.plotly_chart(bar_fig) 
+    max_type = df_predictions.loc[df_predictions['예상 매출'].idxmax()]['시간대']
+    st.markdown(f'####  👉 시간대 {max_type} 의 매출이 가장 높습니다!')
+
+    st.markdown('---')
+    st.write('')
 
 
-    # 합치기
-    # feature_array와 predictions를 수평으로 연결
-    predictions = predictions[:, np.newaxis] # 2D 배열로 만들기 
-    merged_array = np.hstack((feature_array, predictions))
+# 합치기
+# feature_array와 predictions를 수평으로 연결
+predictions = predictions[:, np.newaxis] # 2D 배열로 만들기 
+merged_array = np.hstack((feature_array, predictions))
 
 
-    # 결과 출력
-    # st.write("Merged Array:")
-    # st.write(merged_array) 
+# 결과 출력
+# st.write("Merged Array:")
+# st.write(merged_array)
